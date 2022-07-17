@@ -1,6 +1,11 @@
 function fHook(func, pcall)
-    print("Hooked "..debug.getinfo(func).name .. ": call " .. debug.getinfo(pcall).name .. " instead")
-    hookfunction(func, pcall)
+    if (debug.getinfo(pcall).name == "") then
+        print("Hooked "..debug.getinfo(func).name .. ": call " .. "a custom function " .. "instead")
+        hookfunction(func, pcall)
+    else
+        print("Hooked "..debug.getinfo(func).name .. ": call " .. debug.getinfo(pcall).name .. " instead")
+        hookfunction(func, pcall)
+    end
 end
 
 function fSetUpvalues(func, indexTable, valueTable)
@@ -24,17 +29,29 @@ function fScanFunctionByName(funcName)
                 warn(debug.getinfo(v).name)
                 warn("------".." +Upvalues+ ".."------")
                 for _,v2 in pairs(getupvalues(v)) do
-                    print(_,v2)
+                    if type(v2) == "function" then
+                        print(debug.getinfo(v2).name)
+                    else
+                        print(_, "["..type(v2).."]", v2)
+                    end
                 end
 
                 warn("------".." +Constants+ ".."------")
                 for _,v2 in pairs(getconstants(v)) do
-                    print(_,v2)
+                    if type(v2) == "function" then
+                        print(debug.getinfo(v2).name)
+                    else
+                        print(_, "["..type(v2).."]", v2)
+                    end
                 end
 
                 warn("------".." +Protos+ ".."------")
                 for _,v2 in pairs(getprotos(v)) do
-                    print(_,v2)
+                    if type(v2) == "function" then
+                        print(debug.getinfo(v2).name)
+                    else
+                        print(_, "["..type(v2).."]", v2)
+                    end
                 end
 
                 warn("------".." +Tables+ ".."------")
@@ -46,7 +63,11 @@ function fScanFunctionByName(funcName)
                             print(k,j)
                             pcall(function()
                                 for k2,j2 in pairs(j) do
-                                    print(k2,j2)
+                                    if type(v2) == "function" then
+                                        print(debug.getinfo(j2).name)
+                                    else
+                                        print(k2, "["..type(j2).."]", j2)
+                                    end
                                 end
                             end)
                         end
@@ -60,13 +81,18 @@ function fScanFunctionByName(funcName)
                             print(k,j)
                             pcall(function()
                                 for k2,j2 in pairs(j) do
-                                    print(k2,j2)
+                                    if type(v2) == "function" then
+                                        print(debug.getinfo(j2).name)
+                                    else
+                                        print(k2, "["..type(j2).."]", j2)
+                                    end
                                 end
                             end)
                         end
                     end
                 end
             end
+            return
         end
     end
 end
@@ -79,18 +105,26 @@ function fScanFunction(func)
         if type(v2) == "function" then
             print(debug.getinfo(v2).name)
         else
-            print(_, type(v2), v2)
+            print(_, "["..type(v2).."]", v2)
         end
     end
 
     warn("------".." +Constants+ ".."------")
     for _,v2 in pairs(getconstants(func)) do
-        print(_,v2)
+        if type(v2) == "function" then
+            print(debug.getinfo(v2).name)
+        else
+            print(_, "["..type(v2).."]", v2)
+        end
     end
 
     warn("------".." +Protos+ ".."------")
     for _,v2 in pairs(getprotos(func)) do
-        print(_,v2)
+        if type(v2) == "function" then
+            print(debug.getinfo(v2).name)
+        else
+            print(_, "["..type(v2).."]", v2)
+        end
     end
 
     warn("------".." +Tables+ ".."------")
@@ -102,7 +136,11 @@ function fScanFunction(func)
                 print(k,j)
                 pcall(function()
                     for k2,j2 in pairs(j) do
-                        print(k2,j2)
+                        if type(v2) == "function" then
+                            print(debug.getinfo(j2).name)
+                        else
+                            print(k2, "["..type(j2).."]", j2)
+                        end
                     end
                 end)
             end
@@ -116,9 +154,52 @@ function fScanFunction(func)
                 print(k,j)
                 pcall(function()
                     for k2,j2 in pairs(j) do
-                        print(k2,j2)
+                        if type(v2) == "function" then
+                            print(debug.getinfo(j2).name)
+                        else
+                            print(k2, "["..type(j2).."]", j2)
+                        end
                     end
                 end)
+            end
+        end
+    end
+    return
+end
+
+function fSimpleScanByName(func)
+    for i,v in pairs(getgc()) do
+        if type(v) == "function" then
+            if debug.getinfo(v).name == func then
+                print()
+                warn(debug.getinfo(v).name)
+                warn("------".." +Upvalues+ ".."------")
+                for _,v2 in pairs(getupvalues(v)) do
+                    if type(v2) == "function" then
+                        print(debug.getinfo(v2).name)
+                    else
+                        print(_, "["..type(v2).."]", v2)
+                    end
+                end
+
+                warn("------".." +Constants+ ".."------")
+                for _,v2 in pairs(getconstants(v)) do
+                    if type(v2) == "function" then
+                        print(debug.getinfo(v2).name)
+                    else
+                        print(_, "["..type(v2).."]", v2)
+                    end
+                end
+
+                warn("------".." +Protos+ ".."------")
+                for _,v2 in pairs(getprotos(v)) do
+                    if type(v2) == "function" then
+                        print(debug.getinfo(v2).name)
+                    else
+                        print(_, "["..type(v2).."]", v2)
+                    end
+                end
+                return
             end
         end
     end
@@ -194,4 +275,80 @@ end
 function fSetProtos(func, index, newfunc)
     print("Hooked "..debug.getinfo(func).name .. " : call " .. debug.getinfo(newfunc).name .. "instead")
     setproto(func, index, newfunc)
+end
+
+function useFunction(func, ...)
+    return func(...)
+end
+
+function useFunctionNA(func)
+    return func()
+end
+
+function fScanForFunctionsWithValues(valuesList)
+    for i,v in pairs(getgc()) do
+        if type(v) == "function" then
+            if debug.getinfo(v).name ~= ""
+        and debug.getinfo(v).name ~= "Connect"
+        and debug.getinfo(v).name ~= "connect"
+        and debug.getinfo(v).name ~= "update"
+        and debug.getinfo(v).name ~= "link"
+        and debug.getinfo(v).name ~= "Wait"
+        and debug.getinfo(v).name ~= "wait"
+        and debug.getinfo(v).name ~= "HandleCreation"
+        and debug.getinfo(v).name ~= "Initial"
+        and debug.getinfo(v).name ~= "Update"
+        and debug.getinfo(v).name ~= "update"
+        and debug.getinfo(v).name ~= "extrapolate"
+        and debug.getinfo(v).name ~= "onTextFocusGained"
+        and debug.getinfo(v).name ~= "FadeOutFunction"
+        and debug.getinfo(v).name ~= "FadeInFunction"
+        and debug.getinfo(v).name ~= "PushBack"
+        and debug.getinfo(v).name ~= "Get"
+        and debug.getinfo(v).name ~= "get"
+        and debug.getinfo(v).name ~= "Post"
+        and debug.getinfo(v).name ~= "Front"
+        and debug.getinfo(v).name ~= "Empty"
+        and debug.getinfo(v).name ~= "Size"
+        and debug.getinfo(v).name ~= "AnimGuiObjects"
+        and debug.getinfo(v).name ~= "UpdateAnimFunction"
+        and debug.getinfo(v).name ~= "GetData"
+        and debug.getinfo(v).name ~= "UpdateTextFunction"
+        and debug.getinfo(v).name ~= "Disconnect"
+        and debug.getinfo(v).name ~= "__index"
+        and debug.getinfo(v).name ~= "__call"
+        and debug.getinfo(v).name ~= "_compute"
+        and debug.getinfo(v).name ~= "__newindex"
+        and debug.getinfo(v).name ~= "setstate"
+        and debug.getinfo(v).name ~= "step"
+        and debug.getinfo(v).name ~= "IsA"
+        and debug.getinfo(v).name ~= "pairs"
+        and debug.getinfo(v).name ~= "ServerInitial"
+        and debug.getinfo(v).name ~= "UrlEncode"
+        and debug.getinfo(v).name ~= "new"
+        and debug.getinfo(v).name ~= "Spawn"
+        and debug.getinfo(v).name ~= "spawn"
+        and debug.getinfo(v).name ~= "Halt"
+        and debug.getinfo(v).name ~= "characterAdded"
+        and debug.getinfo(v).name ~= "characterRemoving"
+        and debug.getinfo(v).name ~= "fire"
+        and debug.getinfo(v).name ~= "Destroy"
+        and debug.getinfo(v).name ~= "GetHeightFunction" then
+                for _,v2 in pairs(getupvalues(v)) do
+                    for i3 = 1, #valuesList, 1 do
+                        if v2 == valuesList[i3] then
+                            print(debug.getinfo(v).name)
+                        end
+                    end
+                end
+                for _,v2 in pairs(getconstants(v)) do
+                    for i3 = 1, #valuesList, 1 do
+                        if v2 == valuesList[i3] then
+                            print(debug.getinfo(v).name)
+                        end
+                    end
+                end
+            end
+        end
+    end
 end
