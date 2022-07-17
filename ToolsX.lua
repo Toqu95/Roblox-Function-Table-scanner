@@ -3,14 +3,14 @@ function fHook(func, pcall)
     hookfunction(func, pcall)
 end
 
-function fHookUpvalues(func, indexTable, valueTable)
+function fSetUpvalues(func, indexTable, valueTable)
     for i = 1, #indexTable, 1 do
         debug.setupvalue(func, indexTable[i], valueTable[i])
         print("Hooked Upvalue ".. debug.getinfo(func).name, ": ", tostring(indexTable[i]), " = ", tostring(valueTable[i]))
     end
 end
 
-function fHookConstants(func, indexTable, valueTable)
+function fSetConstants(func, indexTable, valueTable)
     for i = 1, #indexTable, 1 do
         debug.setconstant(func, indexTable[i], valueTable[i])
         print("Hooked Constant ".. debug.getinfo(func).name, ": ", tostring(indexTable[i]), " = ", tostring(valueTable[i]))
@@ -115,12 +115,6 @@ function fScanFunction(func)
                 pcall(function()
                     for k2,j2 in pairs(j) do
                         print(k2,j2)
-                        for k3,j3 in pairs(j2) do
-                            print(k3,j3)
-                            for k4,j4 in pairs(j3) do
-                                print(k4,j4)
-                            end
-                        end
                     end
                 end)
             end
@@ -135,12 +129,6 @@ function fScanFunction(func)
                 pcall(function()
                     for k2,j2 in pairs(j) do
                         print(k2,j2)
-                        for k3,j3 in pairs(j2) do
-                            print(k3,j3)
-                            for k4,j4 in pairs(j3) do
-                                print(k4,j4)
-                            end
-                        end
                     end
                 end)
             end
@@ -205,6 +193,14 @@ end
 
 function fGetConstant(func, index)
     return getconstant(func, index)
+end
+
+function fPrintConstantType(func, index)
+    print(type(getconstant(func, index)))
+end
+
+function fPrintUpvalueType(func, index)
+    print(type(getupvalue(func, index)))
 end
 
 function fSetProtos(func, index, newfunc)
@@ -278,6 +274,9 @@ for i,v in pairs(getgc()) do
         and debug.getinfo(v).name ~= "GetData"
         and debug.getinfo(v).name ~= "UpdateTextFunction"
         and debug.getinfo(v).name ~= "Disconnect"
+        and debug.getinfo(v).name ~= "__index"
+        and debug.getinfo(v).name ~= "__newindex"
+        and debug.getinfo(v).name ~= "setstate"
         and debug.getinfo(v).name ~= "GetHeightFunction" then
 
             local HookSection = hooking_page:addSection(tostring(debug.getinfo(v).name))
