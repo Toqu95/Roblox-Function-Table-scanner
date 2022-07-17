@@ -3,14 +3,18 @@ function fHook(func, pcall)
     hookfunction(func, pcall)
 end
 
-function fHookUpvalue(func, index, value)
-    print("Hooked Upvalue ".. debug.getinfo(func).name, ": ", tostring(getupvalue(func, index)), " = ", tostring(value))
-    debug.setupvalue(func, index, value)
+function fHookUpvalues(func, indexTable, valueTable)
+    for i = 1, #indexTable, 1 do
+        debug.setupvalue(func, indexTable[i], valueTable[i])
+        print("Hooked Upvalue ".. debug.getinfo(func).name, ": ", tostring(indexTable[i]), " = ", tostring(valueTable[i]))
+    end
 end
 
-function fHookConstant(func, index, value)
-    print("Hooked Constant ".. debug.getinfo(func).name, ": ", tostring(getconstant(func, index)), " = ", tostring(value))
-    debug.setconstant(func, index, value)
+function fHookConstants(func, indexTable, valueTable)
+    for i = 1, #indexTable, 1 do
+        debug.setconstant(func, indexTable[i], valueTable[i])
+        print("Hooked Constant ".. debug.getinfo(func).name, ": ", tostring(indexTable[i]), " = ", tostring(valueTable[i]))
+    end
 end
 
 function fScanFunctionByName(funcName)
@@ -79,6 +83,71 @@ function fScanFunctionByName(funcName)
     end
 end
 
+function fScanFunction(func)
+    print()
+    warn(debug.getinfo(func).name)
+    warn("------".." +Upvalues+ ".."------")
+    for _,v2 in pairs(getupvalues(func)) do
+        if type(v2) == "function" then
+            print(debug.getinfo(v2).name)
+        else
+            print(_, type(v2), v2)
+        end
+    end
+
+    warn("------".." +Constants+ ".."------")
+    for _,v2 in pairs(getconstants(func)) do
+        print(_,v2)
+    end
+
+    warn("------".." +Protos+ ".."------")
+    for _,v2 in pairs(getprotos(func)) do
+        print(_,v2)
+    end
+
+    warn("------".." +Tables+ ".."------")
+    warn("Upvalues")
+    for _,v2 in pairs(getupvalues(func)) do
+        if type(v2) == "table" then
+            print(_,v2)
+            for k,j in pairs(v2) do
+                print(k,j)
+                pcall(function()
+                    for k2,j2 in pairs(j) do
+                        print(k2,j2)
+                        for k3,j3 in pairs(j2) do
+                            print(k3,j3)
+                            for k4,j4 in pairs(j3) do
+                                print(k4,j4)
+                            end
+                        end
+                    end
+                end)
+            end
+        end
+    end
+    warn("Constants")
+    for _,v2 in pairs(getconstants(func)) do
+        if type(v2) == "table" then
+            print(_,v2)
+            for k,j in pairs(v2) do
+                print(k,j)
+                pcall(function()
+                    for k2,j2 in pairs(j) do
+                        print(k2,j2)
+                        for k3,j3 in pairs(j2) do
+                            print(k3,j3)
+                            for k4,j4 in pairs(j3) do
+                                print(k4,j4)
+                            end
+                        end
+                    end
+                end)
+            end
+        end
+    end
+end
+
 function fHookNil(func)
     print("Hooked "..debug.getinfo(func).name .. " : return nil")
     hookfunction(func, function() return nil end)
@@ -102,4 +171,43 @@ end
 function fHookFalse(func)
     print("Hooked "..debug.getinfo(func).name .. " : return false")
     hookfunction(func, function() return false end)
+end
+
+function getFunctionByName(funcName)
+    for i,v in pairs(getgc()) do
+        if type(v) == "function" then
+            if debug.getinfo(v).name == funcName then
+                return v
+            end
+        end
+    end
+end
+
+function fGetConstants(func)
+    return getconstants(func)
+end
+
+function fGetUpvalues(func)
+    return getupvalues(func)
+end
+
+function fGetUpvalue(func, index)
+    return getupvalue(func, index)
+end
+
+function fGetProtos(func)
+    return getprotos(func)
+end
+
+function fGetProto(func, index)
+    return getproto(func, index)
+end
+
+function fGetConstant(func, index)
+    return getconstant(func, index)
+end
+
+function fSetProtos(func, index, newfunc)
+    print("Hooked "..debug.getinfo(func).name .. " : call " .. debug.getinfo(newfunc).name .. "instead")
+    setproto(func, index, newfunc)
 end
