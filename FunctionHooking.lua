@@ -39,27 +39,7 @@ function fScanFunctionByName(funcName)
 
                 warn("------".." +Tables+ ".."------")
                 warn("Upvalues")
-                for _,v2 in pairs(getupvalues(v)) do
-                    if type(v2) == "table" then
-                        warn(_,v2)
-                        for k,j in pairs(v2) do
-                            print(k,j)
-                            pcall(function()
-                                for k2,j2 in pairs(j) do
-                                    print(k2,j2)
-                                    for k3,j3 in pairs(j2) do
-                                        print(k3,j3)
-                                        for k4,j4 in pairs(j3) do
-                                            print(k4,j4)
-                                        end
-                                    end
-                                end
-                            end)
-                        end
-                    end
-                end
-                warn("Constants")
-                for _,v2 in pairs(getconstants(v)) do
+                for _,v2 in pairs(getupvalues(func)) do
                     if type(v2) == "table" then
                         print(_,v2)
                         for k,j in pairs(v2) do
@@ -67,12 +47,20 @@ function fScanFunctionByName(funcName)
                             pcall(function()
                                 for k2,j2 in pairs(j) do
                                     print(k2,j2)
-                                    for k3,j3 in pairs(j2) do
-                                        print(k3,j3)
-                                        for k4,j4 in pairs(j3) do
-                                            print(k4,j4)
-                                        end
-                                    end
+                                end
+                            end)
+                        end
+                    end
+                end
+                warn("Constants")
+                for _,v2 in pairs(getconstants(func)) do
+                    if type(v2) == "table" then
+                        print(_,v2)
+                        for k,j in pairs(v2) do
+                            print(k,j)
+                            pcall(function()
+                                for k2,j2 in pairs(j) do
+                                    print(k2,j2)
                                 end
                             end)
                         end
@@ -115,12 +103,6 @@ function fScanFunction(func)
                 pcall(function()
                     for k2,j2 in pairs(j) do
                         print(k2,j2)
-                        for k3,j3 in pairs(j2) do
-                            print(k3,j3)
-                            for k4,j4 in pairs(j3) do
-                                print(k4,j4)
-                            end
-                        end
                     end
                 end)
             end
@@ -135,12 +117,6 @@ function fScanFunction(func)
                 pcall(function()
                     for k2,j2 in pairs(j) do
                         print(k2,j2)
-                        for k3,j3 in pairs(j2) do
-                            print(k3,j3)
-                            for k4,j4 in pairs(j3) do
-                                print(k4,j4)
-                            end
-                        end
                     end
                 end)
             end
