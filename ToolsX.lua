@@ -325,7 +325,7 @@ for i,v in pairs(getreg()) do
     end
 end
 
-local hooking_page = venyx:addPage("Hooking", 5012544693)
+local hooking_page = venyx:addPage("Functions", 5012544693)
 
 for i,v in pairs(getgc()) do
     if type(v) == "function" then
@@ -377,32 +377,94 @@ for i,v in pairs(getgc()) do
         and debug.getinfo(v).name ~= "GetHeightFunction" then
 
             local HookSection = hooking_page:addSection(tostring(debug.getinfo(v).name))
-            HookSection:addButton(tostring("Values")..": "..debug.getinfo(v).name, function()
-                fScanFunction(v)
-            end)
-
-            HookSection:addButton("Hook: return true", function()
-                fHookTrue(v)
-            end)
-
-            HookSection:addButton("Hook: return false", function()
-                fHookFalse(v)
-            end)
-
-            HookSection:addTextbox("Hook: number", "", function(text)
-                fHookNumber(v, text)
-            end)
-
-            HookSection:addButton("Hook: nil", function()
-                fHookNil(v)
-            end)
-
-            HookSection:addTextbox("Hook: string", "", function(text)
-                fHookString(v, text)
-            end)
         end
     end
 end
 
+
+local funcsearch = venyx:addPage("Function Info/Hook", 5012544693)
+local funcsearch_section = funcsearch:addSection("Function")
+local funcsearch_textbox = funcsearch_section:addTextbox("Function Name", "", function(text, focuslost)
+    if focuslost then
+        local newSection = funcsearch:addSection("Function: "..debug.getinfo(getFunctionByName(text)).name)
+    
+        local a = newSection:addButton(tostring("Values")..": "..debug.getinfo(getFunctionByName(text)).name, function()
+            fScanFunction(getFunctionByName(text))
+        end)
+        
+        local b = newSection:addButton("Hook functon: return true", function()
+            fHookTrue(getFunctionByName(text))
+        end)
+        
+        local c = newSection:addButton("Hook functon: return false", function()
+            fHookFalse(getFunctionByName(text))
+        end)
+        
+        local e = newSection:addButton("Hook functon: nil", function()
+            fHookNil(getFunctionByName(text))
+        end)
+        
+        local d = newSection:addTextbox("Hook functon: number", "", function(_text)
+            fHookNumber(getFunctionByName(text), _text)
+        end)
+        
+        local f = newSection:addTextbox("Hook functon: string", "", function(_text)
+            fHookString(getFunctionByName(text), _text)
+        end)
+
+        local table = {}
+
+        newSection:addTextbox("Add number to table", "", function(_text, focuslost)
+            if focuslost then
+                table.insert(table, tonumber(_text))
+            end
+        end)
+
+        newSection:addTextbox("Add string to table", "", function(_text, focuslost)
+            if focuslost then
+                table.insert(table, _text)
+            end
+        end)
+
+        newSection:addButton("Hook functon: table", function()
+            hookfunction(getFunctionByName(text), function() return table end)
+        end)
+
+        newSection:addTextbox("Replace Table at index", "", function(index, focuslost)
+            if focuslost then
+                setupvalue(getFunctionByName(text), index, table)
+            end
+        end)
+
+        local upvalue
+
+        newSection:addTextbox("Set local upvalue", "", function(_text, focuslost)
+            if focuslost then
+                upvalue = _text
+            end
+        end)
+
+        newSection:addTextbox("SetUpvalue at index", "", function(index, focuslost)
+            if focuslost then
+                setupvalue(getFunctionByName(text), index, upvalue)
+            end
+            print("Hooked Upvalue ".. debug.getinfo(getFunctionByName(text)).name, ": ", tostring(index), " = ", tostring(upvalue))
+        end)
+
+        local constant
+
+        newSection:addTextbox("Set constant", "", function(_text, focuslost)
+            if focuslost then
+                constant = _text
+            end
+        end)
+
+        newSection:addTextbox("SetConstant at index", "", function(index, focuslost)
+            if focuslost then
+                setconstant(getFunctionByName(text), index, constant)
+            end
+        end)
+    end
+end)
 
 venyx:SelectPage(venyx.pages[1], true)
