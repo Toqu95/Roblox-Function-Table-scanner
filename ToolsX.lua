@@ -415,22 +415,26 @@ local funcsearch_textbox = funcsearch_section:addTextbox("Function Name", "", fu
         local table = {}
 
         newSection:addTextbox("Add number to table", "", function(_text, focuslost)
+            print("Added number to table:", tonumber(_text))
             if focuslost then
                 table.insert(table, tonumber(_text))
             end
         end)
 
         newSection:addTextbox("Add string to table", "", function(_text, focuslost)
+            print("Added string to table:", _text)
             if focuslost then
                 table.insert(table, _text)
             end
         end)
 
         newSection:addButton("Hook functon: table", function()
+            print("Hook functon: reurn custom table")
             hookfunction(getFunctionByName(text), function() return table end)
         end)
 
         newSection:addTextbox("Replace Table at index", "", function(index, focuslost)
+            print("Hooked Table ".. debug.getinfo(getFunctionByName(text)).name, ": ", tostring(index), " = ", tostring(table))
             if focuslost then
                 setupvalue(getFunctionByName(text), index, table)
             end
@@ -445,10 +449,10 @@ local funcsearch_textbox = funcsearch_section:addTextbox("Function Name", "", fu
         end)
 
         newSection:addTextbox("SetUpvalue at index", "", function(index, focuslost)
+            print("Hooked Upvalue ".. debug.getinfo(getFunctionByName(text)).name, ": ", tostring(index), " = ", tostring(upvalue))
             if focuslost then
                 setupvalue(getFunctionByName(text), index, upvalue)
             end
-            print("Hooked Upvalue ".. debug.getinfo(getFunctionByName(text)).name, ": ", tostring(index), " = ", tostring(upvalue))
         end)
 
         local constant
@@ -460,6 +464,7 @@ local funcsearch_textbox = funcsearch_section:addTextbox("Function Name", "", fu
         end)
 
         newSection:addTextbox("SetConstant at index", "", function(index, focuslost)
+            print("Hooked Upvalue ".. debug.getinfo(getFunctionByName(text)).name, ": ", tostring(index), " = ", tostring(constant))
             if focuslost then
                 setconstant(getFunctionByName(text), index, constant)
             end
